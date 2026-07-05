@@ -7,7 +7,7 @@ using namespace crow;
 
 int main(){
     SimpleApp app;
-    CROW_ROUTE(app, "/download").methods(HTTPMethod::POST, HTTPMethod::GET)([](const crow::request& req){
+    CROW_ROUTE(app, "/download").methods(HTTPMethod::POST)([](const crow::request& req){
         crow::query_string params("?" + req.body);
         if (!params.get("url"))
         {
@@ -15,8 +15,15 @@ int main(){
         }
         std::string youtube_url = params.get("url");
         std::cout << "Downloading: " << youtube_url << "\n";
-        std::string cmd = "yt-dlp -f mp4 -o 'public/video.mp4' \"" + youtube_url + "\"";
-        std::system(cmd.c_str());
+        std::string cmd = "yt-dlp -q --no-warnings -f \"b[ext=mp4]\" -o 'public/video.mp4' \"" + youtube_url + "\"";
+        int terminal = std::system(cmd.c_str());
+        if (terminal)
+        {
+            std::cout << "ERROR: video not founded";
+            return response(500, "Error to download video");
+        }
+        
+        
         response res;
         res.set_static_file_info("public/video.mp4");
         res.set_header("Content-Type", "video/mp4");
