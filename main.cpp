@@ -7,8 +7,8 @@ using namespace crow;
 
 int main(){
     SimpleApp app;
-    CROW_ROUTE(app, "/download").methods(HTTPMethod::POST)([](const crow::request& req){
-        crow::query_string params("?" + req.body);
+    CROW_ROUTE(app, "/download").methods(HTTPMethod::POST)([](const request& req){
+        query_string params("?" + req.body);
         if (!params.get("url"))
         {
             return response(400, "No Url");
